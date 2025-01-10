@@ -1,0 +1,95 @@
+增强的库存管理功能
+权限管理：不同角色（管理员、仓库管理员、销售人员）有不同权限。
+商品分类与标签：支持多级分类和标签系统，方便搜索和统计。
+库存警报：设置库存上下限，低于或高于阈值时自动发送通知。
+多仓库管理：支持多个仓库，每个仓库独立管理库存。
+入库/出库记录：详细记录每次商品的入库和出库操作，包括经手人、时间和备注。
+报表和统计：
+库存日报、月报。
+热销商品统计。
+滞销商品分析。
+供应链管理：记录供应商信息，与采购单关联。
+批次管理：支持批次号，方便管理保质期或生产日期。
+订单管理：整合库存和订单，自动扣减库存。
+支持条形码/二维码：通过扫描设备快速完成入库、出库和查询操作。
+
+
+1. 用户和权限管理（Authentication & Permissions）
+功能：包括用户注册、登录、角色、权限管理等。
+app名称：users 或 authentication
+涉及功能：自定义用户模型、角色、权限控制、认证相关功能。
+2. 商品和库存管理（Inventory Management）
+功能：商品信息管理、库存数量、入库/出库记录等。
+app名称：inventory 或 products
+涉及功能：商品模型、库存管理、批次管理、商品分类等。
+3. 报表和统计（Reports & Analytics）
+功能：库存报表、热销商品、滞销商品等。
+app名称：reports
+涉及功能：数据统计、报表生成、图表显示等。
+4. 供应链和采购（Supply Chain & Procurement）
+功能：供应商管理、采购单、入库记录等。
+app名称：procurement 或 suppliers
+涉及功能：供应商信息、采购记录、订单管理等。
+5. 订单管理（Order Management）
+功能：订单创建、库存扣减、订单状态管理等。
+app名称：orders
+涉及功能：订单模型、订单状态跟踪、与库存的结合。
+6. 通知和警报（Notifications & Alerts）
+功能：库存警报、库存预警、系统通知等。
+app名称：notifications
+涉及功能：库存警报、用户通知、自动邮件或短信通知等。
+7. 数据导入导出（Data Import/Export）
+功能：支持导入商品、库存数据，导出报表等。
+app名称：data_import_export
+涉及功能：CSV、Excel导入导出功能。
+8. 财务管理（Finance）
+功能：采购费用、库存价值、财务报表等。
+app名称：finance
+涉及功能：财务记录、报表生成、费用与收入管理等。
+9. 审核和日志（Audit & Logs）
+功能：记录用户操作、库存变动等。
+app名称：audit_logs
+涉及功能：操作日志记录、库存变动历史。
+10. 设置和配置（Settings & Configuration）
+功能：全局设置，系统配置等。
+app名称：settings
+涉及功能：系统配置、权限管理、通知设置等。
+Django项目结构示例：
+plaintext
+复制代码
+myproject/
+│
+├── users/               # 用户和权限管理
+├── inventory/           # 商品和库存管理
+├── reports/             # 报表与统计
+├── procurement/         # 供应链和采购
+├── orders/              # 订单管理
+├── notifications/       # 通知和警报
+├── data_import_export/  # 数据导入导出
+├── finance/             # 财务管理
+├── audit_logs/          # 审核和日志
+├── settings/            # 设置和配置
+│
+├── manage.py
+├── myproject/
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+如何管理这些app？
+路由管理：在urls.py中，为每个app添加路由。
+
+python
+复制代码
+# myproject/urls.py
+from django.urls import path, include
+
+urlpatterns = [
+    path('users/', include('users.urls')),
+    path('inventory/', include('inventory.urls')),
+    path('reports/', include('reports.urls')),
+    path('orders/', include('orders.urls')),
+    # 其他app路由
+]
+共享数据模型：如果不同的app需要共享模型或数据，可以通过ForeignKey或ManyToManyField建立模型关系，确保数据的流畅整合。
+
+配置与设置：全局配置可以放在settings.py中，单独的app可以在settings.py中进行特定的配置，例如数据库连接、缓存等。
