@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 
 class Category(models.Model):
@@ -70,27 +71,40 @@ class StockAlert(models.Model):
 
 
 class Warehouse(models.Model):
-    name = models.CharField(max_length=255, unique=True, verbose_name="仓库名称")
-    location = models.TextField(blank=True, verbose_name="仓库位置")
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
-
-    class Meta:
-        verbose_name = "仓库"
-        verbose_name_plural = "仓库"
+    name = models.CharField(max_length=255, unique=True, verbose_name="warehouse name")
+    location = models.TextField(blank=True, verbose_name="location")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="created at")
 
     def __str__(self):
         return self.name
 
 
 class WarehouseStock(models.Model):
-    product = models.ForeignKey('Product', on_delete=models.CASCADE, verbose_name="商品")
-    warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE, verbose_name="仓库")
-    stock = models.IntegerField(default=0, verbose_name="库存数量")
+    product = models.ForeignKey('Product', on_delete=models.CASCADE, verbose_name="product")
+    warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE, verbose_name="warehouse")
+    stock = models.IntegerField(default=0, verbose_name="stock")
 
     class Meta:
-        unique_together = ('product', 'warehouse')  # 确保同一商品在同一仓库中只能有一条记录
-        verbose_name = "仓库库存"
-        verbose_name_plural = "仓库库存"
+        unique_together = ('product', 'warehouse')
 
     def __str__(self):
-        return f"{self.warehouse.name} - {self.product.name} 库存: {self.stock}"
+        return f"{self.warehouse.name} - {self.product.name} stock: {self.stock}"
+
+
+class StockTransaction(models.Model):
+    OPERATION_CHOICES = [
+        ('IN', 'In of stock'),
+        ('OUT', 'Out of stock'),
+    ]
+
+    product = models.ForeignKey('Product', on_delete=models.CASCADE, verbose_name="product")
+    warehouse = models.ForeignKey('Warehouse', on_delete=models.CASCADE, verbose_name="warehouse")
+    operation_type = models.CharField(max_length=3, choices=OPERATION_CHOICES, verbose_name="operation type")
+    quantity = models.PositiveIntegerField(verbose_name="quantity")
+    handled_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True,
+                                   verbose_name="handled by")
+    timestamp = models.DateTimeField(auto_now_add=True, verbose_name="time")
+    remarks = models.TextField(null=True, blank=True, verbose_name="remark")
+
+    def __str__(self):
+        return f"{self.product.name} - {self.get_operation_type_display()} ({self.quantity})"
