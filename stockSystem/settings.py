@@ -90,8 +90,8 @@ DATABASES = {
         "NAME": "stock_manage",
         "USER": "user1",
         "PASSWORD": "admin12345",
-        "HOST": "localhost",  # 或你的数据库主机地址
-        "PORT": "3306",  # MySQL 默认端口
+        "HOST": "localhost",
+        "PORT": "3306",
     }
 }
 
